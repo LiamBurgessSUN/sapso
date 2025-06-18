@@ -1,6 +1,6 @@
 import numpy as np
 
-from SAPSO_AGENT.SAPSO.PSO.ObjectiveFunctions.ObjectiveFunction import ObjectiveFunction
+from PSO.Environment.ObjectiveFunctions.ObjectiveFunction import ObjectiveFunction
 
 
 class Schaffer4Function(ObjectiveFunction):

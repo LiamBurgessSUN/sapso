@@ -1,10 +1,11 @@
 import collections
 
+import gymnasium as gym
 import numpy as np
 
 from PSO.Environment.ObjectiveFunctions.ObjectiveFunction import ObjectiveFunction
 
-class Agent:
+class Agent(gym.Env):
 
     def __init__(self,
                  num_particles=30,
@@ -41,6 +42,13 @@ class Agent:
         self.bounds = None
         self.objective_function = None
 
+        # observation space
+        obs_low = np.array([0.0, 0.0, 0.0, 0.0], dtype=np.float32)
+        obs_high = np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float32)
+        self.observation_space = gym.spaces.Box(
+            low=obs_low, high=obs_high, shape=(4,), dtype=np.float32
+        )
+
     def load_environment(self,
                          objective_function: ObjectiveFunction):
         self.objective_function = objective_function
@@ -59,6 +67,13 @@ class Agent:
         self.pbest_values = self.objective_function.evaluate_matrix(self.positions)
         min_idx = np.argmin(self.pbest_values)
 
+        # observation space reset
+        obs_low = np.array([0.0, 0.0, 0.0, 0.0], dtype=np.float32)
+        obs_high = np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float32)
+        self.observation_space = gym.spaces.Box(
+            low=obs_low, high=obs_high, shape=(4,), dtype=np.float32
+        )
+
         # find initial best
         if len(self.pbest_values) > 0 and np.isfinite(self.pbest_values[min_idx]):
             self.gbest_position = self.pbest_positions[min_idx].copy()
@@ -68,7 +83,7 @@ class Agent:
             self.gbest_position = self.positions[0].copy() if self.num_particles > 0 else np.zeros(self.number_dimensions)
             self.gbest_value = np.inf
 
-    def step(self, omega, c1, c2) -> {}:
+    def step(self, action: np.ndarray) -> {}:
         self.previous_positions = self.positions.copy()
 
         # perturb
@@ -113,13 +128,13 @@ class Agent:
         # record g_best
         self._gbest_history.append(self.gbest_value)
 
-        metrics = self.compute_metrics()
+        metrics = self._compute_metrics()
         metrics['gbest_value'] = self.gbest_value
 
         return metrics
 
 
-    def compute_metrics(self) -> dict:
+    def _compute_metrics(self) -> dict:
         metrics = {
                 'avg_step_size': np.nan,
                 'avg_current_velocity_magnitude': np.nan,

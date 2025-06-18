@@ -1,6 +1,6 @@
 import numpy as np
 
-from SAPSO_AGENT.SAPSO.PSO.ObjectiveFunctions.ObjectiveFunction import ObjectiveFunction
+from PSO.Environment.ObjectiveFunctions.ObjectiveFunction import ObjectiveFunction
 
 class Penalty1Function(ObjectiveFunction):
     def __init__(self, dim=30, num_particles=30, a=10, k=100, m=4):

@@ -108,9 +108,9 @@ class Agent:
         for param in self.q1.parameters(): param.requires_grad = True
         for param in self.q2.parameters(): param.requires_grad = True
 
-        self.slow_update_critic(self.q1, self.q1_target)
-        self.slow_update_critic(self.q2, self.q2_target)
+        self._slow_update_critic(self.q1, self.q1_target)
+        self._slow_update_critic(self.q2, self.q2_target)
 
-    def slow_update_critic(self, source_net, target_net):
+    def _slow_update_critic(self, source_net, target_net):
         for target_param, source_param in zip(target_net.parameters(), source_net.parameters()):
             target_param.data.copy_(self.slow_update_co_eff * source_param.data + (1.0 - self.slow_update_co_eff) * target_param.data)
